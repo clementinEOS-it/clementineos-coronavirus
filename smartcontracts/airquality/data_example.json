@@ -1,0 +1,20 @@
+{
+ 	"from": "gqeaceafdbkq",
+    "Countrycode": "IT",
+    "Namespace": "IT.ISPRA.AQD",
+    "AirQualityNetwork": "NET.IT112A", 
+    "AirQualityStation": "STA.IT0956A",
+    "AirQualityStationEoICode": "",
+    "SamplingPoint": "SPO.IT0956A_5018_ICP-MS_2017-12-05_00:00:00",
+    "SamplingProcess": "SPP.IT0956A_5018_ICP-MS_2017-12-05_00:00:00",
+    "Sample": "SAM.IT0956A_5018_ICP-MS_2017-12-05_00:00:00", 
+    "AirPollutant": "As in PM10",
+    "AirPollutantCode": "http://dd.eionet.europa.eu/vocabulary/aq/pollutant/5018",
+    "AveragingTime": "var",
+    "Concentration": 0.2000000000,
+    "UnitOfMeasurement": "ng/m3",
+    "DatetimeBegin": "2018-01-05 00:00:00 +01:00",
+    "DatetimeEnd": "2018-01-06 00:00:00 +01:00", 
+    "Validity": 2,
+    "Verification": 1
+}
