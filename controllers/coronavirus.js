@@ -139,9 +139,9 @@ let send = (socket, data, cb) => {
                 _response.blocks.push(processed);
                 console.log('sending socket n.' + _.size(_response.blocks));
                 socket.emit('block', JSON.stringify(processed));
+                callback();
             };
 
-            callback();
         });  
     
     }, err => {
