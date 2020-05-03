@@ -13,7 +13,7 @@ var baseURL = 'http://localhost:' + process.env.PORT + '/block/coronavirus';
 // Set config defaults when creating the instance
 const instance = axios.create({
     baseURL: baseURL,
-    headers: {'Content-Type': 'application/json'}
+    headers: {'Origin': baseURL}
 });
 
 let getData = (source, cb) => {
@@ -110,7 +110,7 @@ let send = (socket, data, cb) => {
 
     async.eachSeries(data, (d, callback) => {
 
-        instance.post('/send', d).then(response => {
+        instance.post('/', d).then(response => {
 
             // var resp = JSON.parse(response);
             error = response.data.error;

@@ -8,7 +8,7 @@ var router = express.Router();
 
 const whitelist = require('../whitelist');
 
-router.post('/send', cors(whitelist.cors), function(req, res, next) {
+router.post('/', cors(), function(req, res, next) {
 
     console.log('Sending to BLOCKCHAIN ...');
     console.table(req.body);
