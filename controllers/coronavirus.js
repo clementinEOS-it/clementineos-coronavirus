@@ -126,6 +126,8 @@ let send = (socket, data, cb) => {
                 _response.errors.push(JSON.stringify(resp_data.error));
             };
 
+            callback();
+
         }).catch(error => {
 
             _response.errors.push(JSON.stringify(error));
@@ -139,7 +141,6 @@ let send = (socket, data, cb) => {
                 _response.blocks.push(processed);
                 console.log('sending socket n.' + _.size(_response.blocks));
                 socket.emit('block', JSON.stringify(processed));
-                callback();
             };
 
         });  

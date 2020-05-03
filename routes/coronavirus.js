@@ -1,11 +1,14 @@
 var express = require('express');
 var cvController = require('../controllers/coronavirus');
+var cors = require('cors');
 
 require('dotenv').config();
 
 var router = express.Router();
 
-router.post('/send', function(req, res, next) {
+const whitelist = require('../whitelist');
+
+router.post('/send', cors(whitelist.cors), function(req, res, next) {
 
     console.log('Sending to BLOCKCHAIN ...');
     console.table(req.body);

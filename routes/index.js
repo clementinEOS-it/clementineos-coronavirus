@@ -1,5 +1,6 @@
 var express = require('express');
 var cors = require('cors');
+var _ = require('lodash');
 
 require('dotenv').config();
 
@@ -7,20 +8,19 @@ var router = express.Router();
 
 var eos, pk;
 
-var whitelist = ['http://api.clementineos.it', 'http://localhost:3001'];
+const whitelist = require('../whitelist');
 
-var corsOptions = {
-  origin: (origin, callback) => {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
+/* GET home page. */
+router.get('/', (req, res, next) => {
+  res.render('index', { title: 
+    process.env.TITLE 
+  });
+});
 
 router.param('key', (req, res, next, key) => {
   
+  console.log('Param: ' + key);
+
   if (key == 'status') {
     eos = req.app.locals.eos;
     pk = req.app.locals.privateKey
@@ -30,21 +30,20 @@ router.param('key', (req, res, next, key) => {
   };
 
   next();
-})
-
-/* GET home page. */
-router.get('/', (req, res, next) => {
-  res.render('index', { title: 
-    process.env.TITLE 
-  });
 });
 
-router.get('/network/:key', cors(corsOptions), (req, res, next) => {
-  res.json(eos);
-});
+router.get('/blockchain/:key', cors(whitelist.cors), (req, res, next) => {
 
-router.get('/privateKey/:key', cors(corsOptions), (req, res, next) => {
-  res.json(pk);
+  var r = {
+    eos: eos,
+    privateKey: pk
+  };
+
+  console.table(JSON.stringify(r));
+
+  res.setHeader('Content-Type', 'application/json');
+  res.send(r);
+
 });
 
 module.exports = router;
