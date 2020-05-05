@@ -26,11 +26,12 @@ console.info('---------------\n**** Started ' + process.env.TITLE + ' on port ' 
 // CONFIGURING EOS BLOCKCHAIN NETWORK
 app.locals.eos = require('./eos')(process.env.EOSNETWORK);
 // app.locals.privateKey = require('./privateKeys')(process.env.EOSNETWORK);
-
-app.locals.privateKey = process.env.PRIVATEKEY;
+// app.locals.privateKey = process.env.PRIVATEKEY;
 console.info('**** Eos Network Index ' + app.locals.eos.key);
 
-eosController.init(app.locals.eos.url, app.locals.privateKey.defaultPrivateKey);
+// eosController.init(app.locals.eos.url, app.locals.privateKey.defaultPrivateKey);
+eosController.init(app.locals.eos.url, process.env.PRIVATEKEY);
+
 app.locals.rpc = eosController.rpc;
 app.locals.api = eosController.api;
 
