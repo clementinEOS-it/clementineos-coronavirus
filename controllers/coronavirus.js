@@ -120,8 +120,6 @@ let send = (socket, data, cb) => {
 
     async.eachSeries(data, (d, callback) => {
 
-        console.log(baseURL);
-
         post(d, (err, response) => {
 
             if (err) {
