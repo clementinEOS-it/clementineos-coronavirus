@@ -39,19 +39,19 @@ var server = http.createServer(app);
 const io = require("socket.io")(server);
 
 io.origins((origin, callback) => {
-
   console.log('Origin for Socket: ' + origin);
-
   if (_.indexOf(whitelist.origins, origin) == -1) {
     return callback('origin not allowed', false);
-  }
-
+  };
   callback(null, true);
 });
 
 io.on('connection', socket => {
-  
   console.warn('... socket connected OK.');
+  runUpdate_COVID19(socket);
+});
+
+let runUpdate_COVID19 = socket => {
 
   if (isTimetoUpdate() || process.env.TEST) {
 
@@ -63,21 +63,23 @@ io.on('connection', socket => {
         socket.emit('block', b);
         callback();
       }, err => {
-        console.info('Send data to Blockchain - Finished OK')
+        console.info('Send data to Blockchain - Finished OK');
       });
 
       async.eachSeries(response.errors, (e, callback) => {
         socket.emit('error', e);
         callback();
       }, err => {
-        console.warn('Send data to Blockchain - Finished Error')
-      })
+        console.warn('Send data to Blockchain - Finished Error');
+      });
+
+      if (err) {
+        console.error('Error to update Blockchain COVID19');
+      };
 
     });
-
-  };      
-
-});
+  }; 
+}
 
 /**
  * Listen on provided port, on all network interfaces.

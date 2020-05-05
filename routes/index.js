@@ -42,7 +42,7 @@ router.get('/blockchain/:key', cors(whitelist.cors), (req, res, next) => {
   console.table(JSON.stringify(r));
 
   res.setHeader('Content-Type', 'application/json');
-  res.send(r);
+  res.jsonp(r);
 
 });
 

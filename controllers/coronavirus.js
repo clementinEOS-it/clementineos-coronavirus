@@ -5,16 +5,9 @@ const axios = require('axios');
 const async = require('async');
 const crypto = require('crypto');
 const opendata = require('../opendata/coronavirus');
+const eosNet = require('../eos')(process.env.EOSNETWORK)
 
 require('dotenv').config();
-
-var baseURL = 'http://localhost:' + process.env.PORT + '/block/coronavirus';
-
-// Set config defaults when creating the instance
-const instance = axios.create({
-    baseURL: baseURL,
-    headers: {'Origin': baseURL}
-});
 
 let getData = (source, cb) => {
 
@@ -97,6 +90,24 @@ let checkDataFloat = (d) => {
     }
 };
 
+let post = (data, cb) => {
+
+    var contract = eosNet.smartContracts.coronavirus;
+    
+    var actions = [{
+        account: contract.account,
+        name: "send",
+        authorization: [{
+            actor: contract.account,
+            permission: "active"
+        }],
+        data: data
+    }];
+
+    console.table(actions);
+
+    run(actions, cb);
+};
 
 let send = (socket, data, cb) => {
 
@@ -105,52 +116,40 @@ let send = (socket, data, cb) => {
         errors: []  
     };
 
-    var processed;
-    var error;
+    var processed, error;
 
     async.eachSeries(data, (d, callback) => {
 
-        instance.post('/', d).then(response => {
+        console.log(baseURL);
 
-            // var resp = JSON.parse(response);
-            error = response.data.error;
-            var status = response.status;
+        post(d, (err, response) => {
 
-            processed = response.data.data.processed;
-            
-            console.log('Status receiving data -> ' + status);
-            console.log('receiving data from API Send .... Error -> ' + error.value + ' Block Num -> ' + processed.block_num);
-            
-            if (error.value) {
-                console.warn('Error ...');
-                _response.errors.push(JSON.stringify(resp_data.error));
-            };
+            if (err) {
+                console.error('Error to send data blockchain ....');
+                _response.errors.push(JSON.stringify(d));
+                callback();
+            } else {
 
-            callback();
+                // var resp = JSON.parse(response);
+                error = response.error;
+                processed = response.data.processed;
+                
+                console.log('receiving data from API Send .... Error -> ' + error.value + ' Block Num -> ' + processed.block_num);
+                
+                if (error.value) {
+                    console.error('Error ...');
+                    _response.errors.push(JSON.stringify(resp_data.error));
+                } else {
+                    _response.blocks.push(processed);
+                    console.log('sending socket n.' + _.size(_response.blocks));
+                    socket.emit('block', JSON.stringify(processed));
+                };
 
-        }).catch(error => {
+                callback();
+            }
+        });
 
-            _response.errors.push(JSON.stringify(error));
-            callback();
-
-        }).then(function () {
-            // always executed
-            console.log('always ...');
-
-            if (!error.value) {
-                _response.blocks.push(processed);
-                console.log('sending socket n.' + _.size(_response.blocks));
-                socket.emit('block', JSON.stringify(processed));
-            };
-
-        });  
-    
     }, err => {
-        
-        if (err) {
-            console.error('Error to SEND.');
-        };
-
         cb(_.size(_response.errors) > 0, _response);
     });
     
