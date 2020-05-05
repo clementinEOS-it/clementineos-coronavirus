@@ -18,6 +18,7 @@ let init = (url, defaultPrivateKey) => {
     console.info('**** Connected to EOS BLOCKCHAIN Network -> ' + url + '\n---------------\n');
 
     signatureProvider = new JsSignatureProvider([defaultPrivateKey]);
+    // signatureProvider = new JsSignatureProvider([process.env.PRIVATEKEY]);
 
     rpc = new JsonRpc(url, { 
         fetch 
