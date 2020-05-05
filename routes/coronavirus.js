@@ -11,7 +11,6 @@ const whitelist = require('../whitelist');
 router.post('/', cors(), function(req, res, next) {
 
     console.log('Sending to BLOCKCHAIN ...');
-    console.table(req.body);
 
     var contract = req.app.locals.eos.smartContracts.coronavirus;
     
@@ -27,8 +26,10 @@ router.post('/', cors(), function(req, res, next) {
 
     cvController.run(actions, (err, response) => {
         if (err) {
+            console.error(response);
             res.status(500).json(response);
         } else {
+            console.table(response);
             res.status(200).json(response);
         }
     });
