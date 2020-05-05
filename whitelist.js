@@ -1,8 +1,8 @@
-var origins = ['http://api.clementineos.it/', 
+var origins = ['http://api.clementineos.it/',
+               'http://block.clementineos.it/',
                'http://localhost:3001/', 
                'http://localhost:3002/',
-               'http://localhost:3002/block/coronavirus',
-               'https://clementineos-block.herokuapp.com/block/coronavirus'];
+               'https://clementineos-block.herokuapp.com/'];
 
 var cors = {
   origin: function (origin, callback) {
