@@ -9,6 +9,24 @@ const eosNet = require('../eos')(process.env.EOSNETWORK)
 
 require('dotenv').config();
 
+var api_url;
+
+if (process.env.TEST) {
+    api_url = 'http://localhost:3001/covid19/v1/';
+} else {
+    api_url = 'http://api.clementineos.it/covid19/v1/';
+};
+
+let getAPI = (cb) => {
+    axios.get(api_url).then(data => {
+        cb(false, data);
+    }).catch(error => {
+        // handle error
+        console.error(error);
+        cb(true, error);
+    });
+};
+
 let getData = (source, cb) => {
 
     var _data = [];
@@ -104,12 +122,69 @@ let post = (data, cb) => {
         data: data
     }];
 
-    console.table(actions);
+    // console.table(actions.data);
 
     run(actions, cb);
 };
 
-let send = (socket, data, cb) => {
+let isFindOne = (api_data, item) => {
+
+    // console.log('--- Element item: ' + JSON.stringify(item));
+
+    var i = _.findIndex(api_data, o => {
+        return item.key == o.id_hash
+    });
+
+    if (i != -1) {
+
+        // console.log('--- Element api_data: ' + JSON.stringify(api_data[i]))
+
+        return item.dateISO == api_data[i].date_at &&
+               item.source_hash == api_data[i].source_hash &&
+               item.lat == api_data[i].lat &&
+               item.lng == api_data[i].lng &&
+               item.hws == api_data[i].hws &&
+               item.ic == api_data[i].ic &&
+               item.to == api_data[i].to &&
+               item.hi == api_data[i].hi &&
+               item.tot_cp == api_data[i].tot_cp && 
+               item.tot_new_cp == api_data[i].tot_new_cp &&
+               item.dh == api_data[i].dh &&
+               item.dead == api_data[i].dead &&
+               item.tot_c == api_data[i].tot_c &&
+               item.sw == api_data[i].sw &&
+               item.tc == api_data[i].tc;
+
+    } else {
+        return false;
+    }
+
+    /*
+    {
+        "from": "gqeaceafdbkq",
+        "id": 1,
+        "date_at": "2020-02-24",
+        "id_hash": "d62bef36c69237dfa5eb6c1aee43d44b5581d09ebe572a46462fa506e971e993",
+        "source_hash": "43b216b115b78343991832dac34d25534c3455634d3819c59e8228b07d7753a3",
+        "lat": "40.63947052000000326",
+        "lng": "15.80514834000000057",
+        "hws": 0,
+        "ic": 0,
+        "to": 0,
+        "hi": 0,
+        "tot_cp": 0,
+        "tot_new_cp": 0,
+        "dh": 0,
+        "dead": 0,
+        "tot_c": 0,
+        "sw": 0,
+        "tc": 0
+    }
+    */
+
+};
+
+let send = (socket, data, api_data, cb) => {
 
     var _response = {
         blocks: [],
@@ -120,32 +195,43 @@ let send = (socket, data, cb) => {
 
     async.eachSeries(data, (d, callback) => {
 
-        post(d, (err, response) => {
+        // controllo se esiste già
+        if (!isFindOne(api_data, d)) {
 
-            if (err) {
-                console.error('Error to send data blockchain ....');
-                _response.errors.push(JSON.stringify(d));
-                callback();
-            } else {
+            console.log('New opendata element funded ...')
+            // console.table(d);
 
-                // var resp = JSON.parse(response);
-                error = response.error;
-                processed = response.data.processed;
-                
-                console.log('receiving data from API Send .... Error -> ' + error.value + ' Block Num -> ' + processed.block_num);
-                
-                if (error.value) {
-                    console.error('Error ...');
-                    _response.errors.push(JSON.stringify(resp_data.error));
+            post(d, (err, response) => {
+
+                if (err) {
+                    console.error('Error to send data blockchain ....');
+                    _response.errors.push(JSON.stringify(d));
+                    callback();
                 } else {
-                    _response.blocks.push(processed);
-                    console.log('sending socket n.' + _.size(_response.blocks));
-                    socket.emit('block', JSON.stringify(processed));
-                };
 
-                callback();
-            }
-        });
+                    // var resp = JSON.parse(response);
+                    error = response.error;
+                    processed = response.data.processed;
+                    
+                    console.log('receiving data from API Send .... Error -> ' + error.value + ' Block Num -> ' + processed.block_num);
+                    
+                    if (error.value) {
+                        console.error('Error ...');
+                        _response.errors.push(JSON.stringify(resp_data.error));
+                        console.table(resp_data.error);
+                    } else {
+                        _response.blocks.push(processed);
+                        console.log('sending socket n.' + _.size(_response.blocks));
+                        console.table(d);
+                        socket.emit('block', JSON.stringify(processed));
+                    };
+
+                    callback();
+                }
+            });
+        } else {
+            console.log('Opendata id -> ' + d.id_hash + ' already updated.');
+        }
 
     }, err => {
         cb(_.size(_response.errors) > 0, _response);
@@ -155,21 +241,53 @@ let send = (socket, data, cb) => {
 
 let update = (socket, cb) => {
 
-    getData(opendata, (err, data) => {
+    var result;
+    var api_data;
 
-        var msg = 'sending n.' + _.size(data) + ' data to Blockchain network ... ';
-        console.info(msg);
-        socket.emit('update', msg);
+    async.series({
+        one: function(callback) {
 
-        if (!err && (_.size(data) > 0)) {
-            send(socket, data, cb);
-        } else if (err) {
-            var msg = 'Can\'t read source url opendata!';
-            console.warn('error', msg);
-            socket.emit('error', msg);
-            cb(true, {});
+            getAPI((err, data) => {
+                if (err) {
+                    callback(err, 'Error to get Data Table from Blockchain');
+                } else {
+                    api_data = data.data;
+                    callback(null, 'Ok to get Data Table from Blockchain');
+                }
+            });
+
+        },
+        two: function(callback){
+
+            getData(opendata, (err, data) => {
+
+                var msg = 'sending n.' + _.size(data) + ' data to Blockchain network ... ';
+                console.info(msg);
+                socket.emit('update', msg);
+        
+                if (!err && (_.size(data) > 0)) {
+                    result = data;
+                    callback(null, 'Ok to send data to blockchain ... ');
+                } else if (err) {
+                    var msg = 'Can\'t read source url opendata!';
+                    console.warn('error', msg);
+                    socket.emit('error', msg);
+                    callback(err, msg);
+                };
+            }); 
+
+        }
+    }, function(err, results) {
+        if (err) {
+            cb(true, results);
+        } else if (_.size(result) > 0) {
+            send(socket, 
+                 result, 
+                 api_data, 
+                 cb);
         };
-    }); 
+    });
+
 };
 
 let run = (actions, cb) => {
