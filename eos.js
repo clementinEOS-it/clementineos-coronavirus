@@ -83,7 +83,7 @@ let get = account => {
     });
 
     if (i == -1) {
-        return networks[1];
+        return networks[0];
     } else {
         return networks[i];
     }

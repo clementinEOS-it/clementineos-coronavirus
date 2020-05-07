@@ -159,29 +159,6 @@ let isFindOne = (api_data, item) => {
         return false;
     }
 
-    /*
-    {
-        "from": "gqeaceafdbkq",
-        "id": 1,
-        "date_at": "2020-02-24",
-        "id_hash": "d62bef36c69237dfa5eb6c1aee43d44b5581d09ebe572a46462fa506e971e993",
-        "source_hash": "43b216b115b78343991832dac34d25534c3455634d3819c59e8228b07d7753a3",
-        "lat": "40.63947052000000326",
-        "lng": "15.80514834000000057",
-        "hws": 0,
-        "ic": 0,
-        "to": 0,
-        "hi": 0,
-        "tot_cp": 0,
-        "tot_new_cp": 0,
-        "dh": 0,
-        "dead": 0,
-        "tot_c": 0,
-        "sw": 0,
-        "tc": 0
-    }
-    */
-
 };
 
 let send = (socket, data, api_data, cb) => {
@@ -292,9 +269,6 @@ let update = (socket, cb) => {
 
 let run = (actions, cb) => {
 
-    // console.log('Run Actions ...');
-    // console.log(JSON.stringify(actions));
-
     eosController.runAction(actions, (err, result) => {
 
         var _r = {
@@ -323,7 +297,6 @@ let run = (actions, cb) => {
             console.info('OK -> ' + moment().toISOString());
         };
 
-        // console.log(JSON.stringify(result));
         cb(err, _r);
 
     });
