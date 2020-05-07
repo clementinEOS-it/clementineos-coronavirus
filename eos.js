@@ -2,7 +2,7 @@ const _ = require('lodash');
 
 var networks = [
     {
-        key: 'eosTest1',
+        key: 'gqeaceafdbkq',
         url: 'https://api.testnet.eos.io',
         smartContracts: {
             coronavirus: {
@@ -12,7 +12,7 @@ var networks = [
             }
         }
     },{
-        key: 'eosTest2',
+        key: 'iaqvrxpyvqgw',
         url: 'https://api.testnet.eos.io',
         smartContracts: {
             coronavirus: {
@@ -23,7 +23,7 @@ var networks = [
         }
     },
     {
-        key: 'eosTest3',
+        key: 'sxrzkuxwuxju',
         url: 'https://api.testnet.eos.io',
         smartContracts: {
             coronavirus: {
@@ -33,7 +33,7 @@ var networks = [
             }
         }
     },{
-        key: 'jungle',
+        key: 'clementine35',
         url: 'https://jungle2.cryptolions.io',
         smartContracts: {
             coronavirus: {
@@ -43,7 +43,7 @@ var networks = [
             }
         }
     },{
-        key: 'bosTest',
+        key: 'follwhirab33',
         url: 'https://api-bostest.blockzone.net',
         smartContracts: {
             coronavirus: {
@@ -53,7 +53,7 @@ var networks = [
             }
         }
     },{
-        key: 'telosTest',
+        key: 'gzilenieos33',
         url: 'https://testnet.eos.miami',
         smartContracts: {
             coronavirus: {

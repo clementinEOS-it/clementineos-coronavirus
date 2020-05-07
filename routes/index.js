@@ -21,12 +21,14 @@ router.param('key', (req, res, next, key) => {
   
   console.log('Param: ' + key);
 
+  pk = process.env.PRIVATEKEY
+  
   if (key == 'status') {
     eos = req.app.locals.eos;
-    pk = req.app.locals.privateKey
+    // pk = process.env.PRIVATEKEY
   } else {
     eos = require('../eos')(key);
-    pk = require('../privateKeys')(key);
+    // pk = require('../privateKeys')(key);
   };
 
   next();

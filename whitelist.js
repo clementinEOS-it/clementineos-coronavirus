@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 var origins = ['http://api.clementineos.it/',
                'http://block.clementineos.it/',
                'http://localhost:3001/', 
