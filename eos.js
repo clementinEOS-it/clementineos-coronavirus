@@ -2,7 +2,7 @@ const _ = require('lodash');
 
 var networks = [
     {
-        key: 'gqeaceafdbkq',
+        account: 'gqeaceafdbkq',
         url: 'https://api.testnet.eos.io',
         smartContracts: {
             coronavirus: {
@@ -12,7 +12,7 @@ var networks = [
             }
         }
     },{
-        key: 'iaqvrxpyvqgw',
+        account: 'iaqvrxpyvqgw',
         url: 'https://api.testnet.eos.io',
         smartContracts: {
             coronavirus: {
@@ -23,7 +23,7 @@ var networks = [
         }
     },
     {
-        key: 'sxrzkuxwuxju',
+        account: 'sxrzkuxwuxju',
         url: 'https://api.testnet.eos.io',
         smartContracts: {
             coronavirus: {
@@ -33,7 +33,7 @@ var networks = [
             }
         }
     },{
-        key: 'clementine35',
+        account: 'clementine35',
         url: 'https://jungle2.cryptolions.io',
         smartContracts: {
             coronavirus: {
@@ -43,7 +43,7 @@ var networks = [
             }
         }
     },{
-        key: 'follwhirab33',
+        account: 'follwhirab33',
         url: 'https://api-bostest.blockzone.net',
         smartContracts: {
             coronavirus: {
@@ -53,7 +53,7 @@ var networks = [
             }
         }
     },{
-        key: 'gzilenieos33',
+        account: 'gzilenieos33',
         url: 'https://testnet.eos.miami',
         smartContracts: {
             coronavirus: {
@@ -64,7 +64,7 @@ var networks = [
         }
     },
     {
-        key: 'local',
+        account: 'local',
         url: 'http://localhost:8888',
         smartContracts: {
             coronavirus: {
@@ -76,13 +76,13 @@ var networks = [
     }
 ]
 
-let get = key => {
+let get = account => {
 
     var i = _.findIndex(networks, o => { 
-        return o.key == key; 
+        return o.account == account; 
     });
 
-    if (i==-1) {
+    if (i == -1) {
         return networks[1];
     } else {
         return networks[i];

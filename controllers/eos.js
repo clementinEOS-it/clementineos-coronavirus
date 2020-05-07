@@ -1,5 +1,3 @@
-const moment = require('moment');
-
 require('dotenv').config();
 
 const { Api, JsonRpc, RpcError } = require('eosjs');

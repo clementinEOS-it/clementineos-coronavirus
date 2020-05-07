@@ -27,7 +27,7 @@ console.info('---------------\n**** Started ' + process.env.TITLE + ' on port ' 
 app.locals.eos = require('./eos')(process.env.ACCOUNT);
 app.locals.privateKey = process.env.PRIVATEKEY;
 
-console.info('**** Eos Network Index ' + app.locals.eos.key);
+console.info('**** Eos Network Index ' + app.locals.eos.account);
 eosController.init(app.locals.eos.url, app.locals.privateKey);
 app.locals.rpc = eosController.rpc;
 app.locals.api = eosController.api;
