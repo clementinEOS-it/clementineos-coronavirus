@@ -5,7 +5,7 @@ const axios = require('axios');
 const async = require('async');
 const crypto = require('crypto');
 const opendata = require('../opendata/coronavirus');
-const eosNet = require('../eos')(process.env.EOSNETWORK)
+const eosNet = require('../eos')(process.env.ACCOUNT)
 
 require('dotenv').config();
 
