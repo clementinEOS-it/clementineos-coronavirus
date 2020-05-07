@@ -11,7 +11,7 @@ require('dotenv').config();
 
 var api_url;
 
-if (process.env.TEST) {
+if (process.env.TEST == 1) {
     api_url = 'http://localhost:3001/covid19/v1/';
 } else {
     api_url = 'http://api.clementineos.it/covid19/v1/';
