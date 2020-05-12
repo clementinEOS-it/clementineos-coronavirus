@@ -3,6 +3,7 @@
 <body>
   
   <main role="main" class="flex-shrink-0">
+
     <div class="container">
       <h1 class="mt-5"><%= title %></h1>
       <p class="lead">
@@ -11,18 +12,34 @@
           <a class="github-button" href="https://github.com/clementinEOS-it" data-color-scheme="no-preference: light; light: light; dark: dark;" data-size="large" aria-label="Follow @clementinEOS-it on GitHub">Follow @clementinEOS-it</a>
         </center>
       </p>
+
       <p class="lead"> 
         <div class="row" id="chart" width="100%"></div>
       </p>
-      <!--
-      <p>Use <a href="{{ site.baseurl }}/docs/{{ site.docs_version }}/examples/sticky-footer-navbar/">the sticky footer with a fixed navbar</a> if need be, too.</p>
-      -->
-      <p>
-        <h2>Blocks</h2>
-        <div class="list-group" id="actions"></div>
-        <div class="alert alert-info" role="alert" id="success"></div>
-        <div class="alert alert-warning" role="alert" id="warning"></div>
-      </p>
+      
+      <div id="app">
+        <p>
+          <h2>Blocks</h2>
+          
+          <div class="list-group">
+
+            <a href="#" class="list-group-item list-group-item-action" v-for="action in actions">
+              <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1"> {{ action.block_num }} </h5><br /> 
+                  <small> {{ action.trx_id }} </small>
+              </div>
+              <p class="mb-1"><pre><code> {{ action.act.data }}</code></pre></p>
+              <small> {{ action.block_time }} </small>
+            </a>
+
+          </div>
+
+            <div class="alert alert-info" role="alert" v-model="msgsuccess" v-show="msgsuccess">{{ msgsuccess }}</div>
+            <div class="alert alert-warning" role="alert" v-model="msgwarning" v-show="msgwarning">{{ msgwarning }}</div>
+          
+        </p>
+      </div>
+
     </div>
   </main>  
 
@@ -35,14 +52,22 @@
   <script>
     'use strict';
 
+    var data = {
+      actions: {},
+      msgsuccess: '',
+      msgwarning: ''
+    };
+
+    new Vue({
+      el: '#app',
+      data: data
+    });
+
     var socket = io();
 
     var lineArr = [];
     var duration = 2000;
 
-    $('#warning').hide();
-    
-    // var wm = $("#graph").outerWidth();
     var wl = $("#chart").outerWidth();
     var chartLine = realTimeLineChart(wl, 500, duration);
 
@@ -50,11 +75,11 @@
 
       // console.log('CLIENT BLOCK block -> ' + _data);
 
-      var data = JSON.parse(_data);
+      var _d = JSON.parse(_data);
 
-      updateLine(data.block_time, data.receipt.cpu_usage_us, data.net_usage);
+      updateLine(_d.block_time, _d.receipt.cpu_usage_us, _d.net_usage);
 
-      updateBlock(data.action_traces);
+      data.actions = _d.action_traces
 
       /*
 
@@ -119,33 +144,15 @@
       */
     });
 
-    socket.on('update', data => {
-      // console.log('CLIENT BLOCK update -> ' + data);
-      $('#success').text(data);
+    socket.on('update', _data => {
+      console.log('CLIENT BLOCK update -> ' + _data);
+      data.msgsuccess = _data;
     });
 
-    socket.on('error', data => {
-      console.log('CLIENT BLOCK error -> ' + data);
-      $('#warning').show();
-      $('#warning').text(data);
+    socket.on('error', _data => {
+      console.log('CLIENT BLOCK error -> ' + _data);
+      data.msgwarning = _data;
     });
-
-    let updateBlock = (data) => {
-        
-      _.forEach(data, item => {
-
-        var html = '<a href="#" class="list-group-item list-group-item-action">' +
-                  '  <div class="d-flex w-100 justify-content-between">' +
-                  '    <h5 class="mb-1">' + item.block_num + '</h5>' +
-                  '      <small>' + item.trx_id + '</small>' +
-                  '  </div>' +
-                  '  <p class="mb-1"><pre><code>' + JSON.stringify(item.act.data) + '</code></pre></p>' +
-                  '  <small>' + item.block_time + '</small>' +
-                  '</a>';
-        $('#actions').html(html);
-
-      });
-    }
 
     let updateLine = (date, cpu, net) => {
 

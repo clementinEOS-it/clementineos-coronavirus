@@ -60,6 +60,7 @@ app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
 app.use('/socket', express.static(__dirname + '/node_modules/socket.io-client/dist'));
 app.use('/moment', express.static(__dirname + '/node_modules/moment'));
 app.use('/lodash', express.static(__dirname + '/node_modules/lodash'));
+app.use('/vue', express.static(__dirname + '/node_modules/vue/dist'));
 
 // --------------------------------------------
 // CORS
