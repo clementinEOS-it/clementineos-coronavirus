@@ -213,7 +213,7 @@ let send = (socket, data, api_data, cb) => {
                 }
             });
         } else {
-            socket.emit('update', 'Last transactions\n' + d.key + '\n' + d.dateISO);
+            socket.emit('update', 'Last transactions: ' + d.key + ' - ' + d.dateISO);
             callback();
         };
 
