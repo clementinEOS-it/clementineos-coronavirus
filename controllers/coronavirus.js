@@ -127,37 +127,46 @@ let post = (data, cb) => {
     run(actions, cb);
 };
 
-let isFindOne = (api_data, item) => {
+let isNew = (api_data, item) => {
 
-    // console.log('--- Element item: ' + JSON.stringify(item));
-
-    var i = _.findIndex(api_data, o => {
-        return item.key == o.id_hash
+    var element = _.find(api_data, { 
+        'id_hash': item.key
+        // , 'source_hash': item.source_hash
+        // ,'date_at': item.dateISO
     });
 
-    if (i != -1) {
+    /*
+    var element = _.find(api_data, o => {
 
-        // console.log('--- Element api_data: ' + JSON.stringify(api_data[i]))
+        // console.log('Element find :' + JSON.stringify(o));
 
-        return item.dateISO == api_data[i].date_at &&
-               item.source_hash == api_data[i].source_hash &&
-               item.lat == api_data[i].lat &&
-               item.lng == api_data[i].lng &&
-               item.hws == api_data[i].hws &&
-               item.ic == api_data[i].ic &&
-               item.to == api_data[i].to &&
-               item.hi == api_data[i].hi &&
-               item.tot_cp == api_data[i].tot_cp && 
-               item.tot_new_cp == api_data[i].tot_new_cp &&
-               item.dh == api_data[i].dh &&
-               item.dead == api_data[i].dead &&
-               item.tot_c == api_data[i].tot_c &&
-               item.sw == api_data[i].sw &&
-               item.tc == api_data[i].tc;
 
+        return (item.key == o.id_hash) &&
+               (item.source_hash == o.source_hash) &&
+               (moment(item.dateISO).isSame(o.date_at)) &&
+               item.lng == o.lng &&
+               item.hws == o.hws &&
+               item.ic == o.ic &&
+               item.to == o.to &&
+               item.hi == o.hi &&
+               item.tot_cp == o.tot_cp && 
+               item.tot_new_cp == o.tot_new_cp &&
+               item.dh == o.dh &&
+               item.dead == o.dead &&
+               item.tot_c == o.tot_c &&
+               item.sw == o.sw &&
+               item.tc == o.tc
+    });
+    */
+
+    if (typeof element == 'undefined') {
+        console.log('***** New opendata element funded *****');
+        console.table(item);
     } else {
-        return false;
-    }
+        console.log('Opendata id -> ' + element.id_hash + ' already updated.');
+    };
+
+    return (typeof element == 'undefined');
 
 };
 
@@ -173,10 +182,7 @@ let send = (socket, data, api_data, cb) => {
     async.eachSeries(data, (d, callback) => {
 
         // controllo se esiste già
-        if (!isFindOne(api_data, d)) {
-
-            console.log('New opendata element funded ...')
-            // console.table(d);
+        if (isNew(api_data, d)) {
 
             post(d, (err, response) => {
 
@@ -196,10 +202,10 @@ let send = (socket, data, api_data, cb) => {
                         console.error('Error ...');
                         _response.errors.push(JSON.stringify(resp_data.error));
                         console.table(resp_data.error);
+                        socket.emit('error', resp_data.error);
                     } else {
                         _response.blocks.push(processed);
                         console.log('sending socket n.' + _.size(_response.blocks));
-                        console.table(d);
                         socket.emit('block', JSON.stringify(processed));
                     };
 
@@ -207,8 +213,9 @@ let send = (socket, data, api_data, cb) => {
                 }
             });
         } else {
-            console.log('Opendata id -> ' + d.id_hash + ' already updated.');
-        }
+            socket.emit('update', 'Last transactions\n' + d.key + '\n' + d.dateISO);
+            callback();
+        };
 
     }, err => {
         cb(_.size(_response.errors) > 0, _response);
