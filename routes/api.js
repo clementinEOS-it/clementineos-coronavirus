@@ -1,8 +1,9 @@
 var express = require('express');
-var coronavirusController = require('../controllers/coronavirus');
-var geoJSONController = require('../controllers/geojson');
+var api = require('../controllers/api');
+var geojson = require('../controllers/geojson');
 const _ = require('lodash');
 const { Parser } = require('json2csv');
+var eos = require('eosblockchain');
 
 require('dotenv').config();
 
@@ -39,7 +40,7 @@ router.get('/latlng', (req, res, next) => {
         if (err) {
             res.status(500).send('');
         } else {
-            var r = coronavirusController.data_byLatLng(response);
+            var r = api.byLatLng(response);
             res.status(200).json(r);
         };
     });
@@ -58,8 +59,8 @@ router.get('/geojson', (req, res, next) => {
         if (err) {
             res.status(500).send('');
         } else {
-            var r = coronavirusController.data_byLatLng(response);
-            var r = geoJSONController.get_geoJSON(r); 
+            var r = api.byLatLng(response);
+            var r = geojson(r); 
             res.status(200).json(r);
         };
     });
@@ -80,7 +81,7 @@ router.get('/time', (req, res, next) => {
         } else {
 
             console.log('by time ...');
-            var r = coronavirusController.data_byTime(response);
+            var r = api.byTime(response);
             res.status(200).json(r);
         };
 
@@ -102,8 +103,8 @@ router.get('/diff', (req, res, next) => {
             res.status(500).send('');
         } else {
             console.log('by diff ...');
-            var r = coronavirusController.data_byTime(response);
-            var r = coronavirusController.data_byDiff(r);
+            var r = api.byTime(response);
+            var r = api.byDiff(r);
             res.status(200).json(r);
         };
 
@@ -124,7 +125,7 @@ router.get('/csv/group', (req, res, next) => {
             res.status(500).send('');
         } else {
 
-            var r = coronavirusController.data_byTime(response);
+            var r = api.byTime(response);
 
             console.log('data by group ... select ' + req.query.select);
 
@@ -136,7 +137,7 @@ router.get('/csv/group', (req, res, next) => {
                     fields 
                 };
 
-                coronavirusController.data_byGraphList_select(r, req.query.select, _response => {
+                api.yGraphListOne(r, req.query.select, _response => {
                     const parser = new Parser(opts);
                     const csv = parser.parse(_response);
                     res.setHeader('Content-Type', 'text/csv');
@@ -151,7 +152,7 @@ router.get('/csv/group', (req, res, next) => {
                     fields 
                 };
 
-                coronavirusController.data_byGraph(r, _response => {
+                api.byGraph(r, _response => {
                     const parser = new Parser(opts);
                     const csv = parser.parse(_response);
                     res.setHeader('Content-Type', 'text/csv');
@@ -176,7 +177,7 @@ router.get('/csv/list', (req, res, next) => {
             res.status(500).send('');
         } else {
 
-            var r = coronavirusController.data_byTime(response);
+            var r = api.byTime(response);
 
             console.log('data by list ...');
             
@@ -198,7 +199,7 @@ router.get('/csv/list', (req, res, next) => {
                 fields 
             };
 
-            coronavirusController.data_byGraphList(r, response => {
+            api.byGraphList(r, response => {
                 const parser = new Parser(opts);
                 const csv = parser.parse(response);
                 res.setHeader('Content-Type', 'text/csv');
@@ -210,8 +211,13 @@ router.get('/csv/list', (req, res, next) => {
 
 let getBlockchainTable = (contract, limit, cb) => {
 
-    coronavirusController.getTable(contract, limit, 'virusdata', (err, response) => {
+    var options = {
+        table : 'virusdata',
+        limit: limit
+    };
 
+    eos.getTable(contract, options, (error, response) => {
+        
         var r = _.sortBy(response, item => {
             return item.dateISO
         });
@@ -221,17 +227,5 @@ let getBlockchainTable = (contract, limit, cb) => {
     });
 
 };
-
-/*
-let getLimit = (req) => {
-
-    if (req.query.limit == null || typeof req.query.limit == 'undefined') {
-        return -1
-    } else {
-        return req.query.limit;
-    }
-
-}
-*/
 
 module.exports = router;

@@ -7,6 +7,7 @@ var logger          = require('morgan');
 const cookieSession = require('cookie-session');
 const crypto        = require('crypto');
 const cors          = require('cors');
+const eos           = require('eosblockchain');
 
 require('dotenv').config();
 
@@ -14,9 +15,6 @@ require('dotenv').config();
 var indexRouter = require('./routes/index');
 var cvBlock = require('./routes/blockchain');
 var cvAPI = require('./routes/blockchain');
-
-// Controllers
-var eosController = require('./controllers/eos');
 
 // --------------------------------------------
 var app = express();
@@ -26,12 +24,19 @@ console.info('---------------\n**** Started ' + process.env.TITLE + ' on port ' 
 // ---------------------------------------------------
 // CONFIGURING EOS BLOCKCHAIN NETWORK
 app.locals.eos = require('./eos')(process.env.ACCOUNT);
+console.info('**** Eos Network Index ' + app.locals.eos.account);
+
 app.locals.privateKey = process.env.PRIVATEKEY;
 
-console.info('**** Eos Network Index ' + app.locals.eos.account);
-eosController.init(app.locals.eos.url, app.locals.privateKey);
-app.locals.rpc = eosController.rpc;
-app.locals.api = eosController.api;
+const optionsEos = {
+  url: app.locals.eos.url,
+  signatureKey: app.locals.privateKey
+};
+
+eos.init(optionsEos);
+
+app.locals.rpc = eos.rpc;
+app.locals.api = eos.api;
 
 // --------------------------------------------
 // view engine setup

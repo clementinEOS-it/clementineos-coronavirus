@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const moment = require('moment');
-var eosController = require('./eos');
+const eos = require('eosblockchain');
 const axios = require('axios');
 const async = require('async');
 const crypto = require('crypto');
@@ -108,25 +108,6 @@ let checkDataFloat = (d) => {
     }
 };
 
-let post = (data, cb) => {
-
-    var contract = eosNet.smartContracts.coronavirus;
-    
-    var actions = [{
-        account: contract.account,
-        name: "send",
-        authorization: [{
-            actor: contract.account,
-            permission: "active"
-        }],
-        data: data
-    }];
-
-    // console.table(actions.data);
-
-    run(actions, cb);
-};
-
 let isNew = (api_data, item) => {
 
     var element = _.find(api_data, { 
@@ -184,7 +165,9 @@ let send = (socket, data, api_data, cb) => {
         // controllo se esiste già
         if (isNew(api_data, d)) {
 
-            post(d, (err, response) => {
+            var contract = eosNet.smartContracts.coronavirus;
+    
+            run(contract, 'send', d, (err, response) => {
 
                 if (err) {
                     console.error('Error to send data blockchain ....');
@@ -274,9 +257,9 @@ let update = (socket, cb) => {
 
 };
 
-let run = (actions, cb) => {
+let run = (contract, action, data, cb) => {
 
-    eosController.runAction(actions, (err, result) => {
+    eos.run(contract, action, data, (err, result) => {
 
         var _r = {
             data: result,

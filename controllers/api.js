@@ -1,16 +1,7 @@
 const _ = require('lodash');
 const moment = require('moment');
-var eosController = require('../controllers/eos');
-const axios = require('axios');
 
 require('dotenv').config();
-
-var baseURL = 'http://localhost:' + process.env.PORT + '/api/coronavirus';
-
-// Set config defaults when creating the instance
-const instance = axios.create({
-    baseURL: baseURL
-});
 
 //var csv is the CSV file with headers
 let csvJSON = (csv) => {
@@ -40,7 +31,7 @@ let csvJSON = (csv) => {
     return JSON.stringify(result); //JSON
 }
 
-let data_byGraphList = (data, cb) => {
+let byGraphList = (data, cb) => {
 
     var _data = [];
 
@@ -70,7 +61,7 @@ let data_byGraphList = (data, cb) => {
 
 } 
 
-let data_byGraphList_select = (data, select, cb) => {
+let byGraphListOne = (data, select, cb) => {
 
     var _data = [];
 
@@ -147,7 +138,7 @@ let get_data = (item, byLatLng) => {
 
 }
 
-let data_byGraph = (data, cb) => {
+let byGraph = (data, cb) => {
 
     var _data = [];
 
@@ -411,7 +402,7 @@ let _runData = (_prev, _last, byLatLng, cb) => {
     cb(new_array);
 }
 
-let data_byDiff = (data) => {
+let byDiff = (data) => {
 
     var _data = [];
 
@@ -436,7 +427,7 @@ let getPercentageChange = (oldNumber, newNumber) => {
 
 };
 
-let data_byLatLng = data => {
+let byLatLng = data => {
 
     var _data = [];
 
@@ -474,7 +465,7 @@ let getString_LatLng = (item) => {
     return [item.lat,item.lng]
 }
 
-let data_byTime = (data) => {
+let byTime = (data) => {
 
     var _data = [];
 
@@ -507,59 +498,6 @@ let data_byTime = (data) => {
     
 } 
 
-let runAction = (actions, cb) => {
-
-    eosController.runAction(actions, (err, result) => {
-
-        var _r = {
-            data: result,
-            error: {
-                value: false,
-                actions: [],
-                description: {},
-                created_at: 0
-            }
-        };
-
-        if (err) {
-            
-            _r.data = {};
-            _r.error = {
-                value: true,
-                actions: actions,
-                description: result,
-                created_at: moment().unix()
-            };
-
-            console.log('-------\nERROR - RUN ACTION \n' + JSON.stringify(_r.error));
-
-            cb(true, _r);
-
-        } else {
-            console.log('-------\nOK - RUN ACTION.');
-            cb(false, _r);
-        }
-
-    });
-
-};
-
-let getTable = (contract, limit, table, cb) => {
-
-    var _options = eosController.getOptionTable(contract, table, limit);
-
-    eosController.getDataTable(_options, (error, response) => {
-        
-        if (error) {
-            console.log('-----> ERROR to get data table from blockchain \n' + JSON.stringify(response));
-            cb(true, {});
-        } else {
-            cb(false, response);
-        }
-
-    });
-};
-
 let checkData = d => {
 
     if (d == null || typeof d == undefined) {
@@ -579,13 +517,11 @@ let checkDataFloat = d => {
 };
 
 module.exports = {
-    getTable,
-    runAction,
-    data_byTime,
-    data_byDiff,
-    data_byLatLng,
+    byTime,
+    byDiff,
+    byLatLng,
     csvJSON,
-    data_byGraph,
-    data_byGraphList,
-    data_byGraphList_select
-}
+    byGraph,
+    byGraphList,
+    byGraphListOne
+};

@@ -1,5 +1,5 @@
 var express = require('express');
-var cvBlock = require('../controllers/block');
+var block = require('../controllers/block');
 var cors = require('cors');
 
 require('dotenv').config();
@@ -14,17 +14,7 @@ router.post('/', cors(whitelist.cors), function(req, res, next) {
 
     var contract = req.app.locals.eos.smartContracts.coronavirus;
     
-    var actions = [{
-        account: contract.account,
-        name: "send",
-        authorization: [{
-            actor: contract.account,
-            permission: "active"
-        }],
-        data: req.body
-    }];
-
-    cvBlock.run(actions, (err, response) => {
+    block.run(contract, 'send', req.body, (err, response) => {
         if (err) {
             console.error(response);
             res.status(500).json(response);
