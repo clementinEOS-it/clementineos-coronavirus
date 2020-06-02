@@ -1,5 +1,5 @@
 var express = require('express');
-var coronavirusController = require('../controllers/coronavirus');
+var coronavirusController = require('../controllers/block');
 var geoJSONController = require('../controllers/geojson');
 const _ = require('lodash');
 const { Parser } = require('json2csv');
@@ -31,7 +31,6 @@ router.get('/latlng', (req, res, next) => {
     var contract = req.app.locals.eos.smartContracts.coronavirus;
     // console.table(contract);
 
-    //var _limit = getLimit(req);
     var _limit = (req.query.limit || -1);
 
     getBlockchainTable(contract, _limit, (err, response) => {
@@ -50,7 +49,6 @@ router.get('/geojson', (req, res, next) => {
 
     var contract = req.app.locals.eos.smartContracts.coronavirus;
     
-    //var _limit = getLimit(req);
     var _limit = (req.query.limit || -1);
 
     getBlockchainTable(contract, _limit, (err, response) => {
@@ -115,7 +113,6 @@ router.get('/csv/group', (req, res, next) => {
 
     var contract = req.app.locals.eos.smartContracts.coronavirus;
     
-    //var _limit = getLimit(req);
     var _limit = (req.query.limit || -1);
 
     getBlockchainTable(contract, _limit, (err, response) => {
@@ -167,7 +164,6 @@ router.get('/csv/list', (req, res, next) => {
 
     var contract = req.app.locals.eos.smartContracts.coronavirus;
     
-    //var _limit = getLimit(req);
     var _limit = (req.query.limit || -1);
 
     getBlockchainTable(contract, _limit, (err, response) => {
@@ -221,17 +217,5 @@ let getBlockchainTable = (contract, limit, cb) => {
     });
 
 };
-
-/*
-let getLimit = (req) => {
-
-    if (req.query.limit == null || typeof req.query.limit == 'undefined') {
-        return -1
-    } else {
-        return req.query.limit;
-    }
-
-}
-*/
 
 module.exports = router;
