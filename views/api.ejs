@@ -4,20 +4,10 @@
   <!-- Begin page content -->
   <main role="main" class="flex-shrink-0">
     <div class="container">
-        <ul class="nav justify-content-center">
-            <li class="nav-item">
-                <a class="nav-link active" href="/">Home</a>
-            </li>
-        </ul>
 
         <h1 class="mt-5">COVID19 API BLOCKCHAIN <i class="fas fa-head-side-mask"></i> <i class="fas fa-virus"></i></h1>
-        <a class="github-button" href="https://github.com/ntkme/github-buttons" data-color-scheme="no-preference: light; light: light; dark: dark;" data-size="large" aria-label="Star ntkme/github-buttons on GitHub">Smart Contract</a>
-           
-        <div class="card">
-            <div class="card-body">
-                <a href="http://covid19.clementineos.it" target="_blank" class="btn btn-primary btn-lg btn-block">Go to COVID19 Monitor</a>
-            </div>
-        </div>
+        
+        <% include include/nav.ejs %>
 
         <p class="lead">
             <h3>Link dei dati pubblici <span class="badge badge-secondary">GET</span></h3>      
@@ -44,6 +34,7 @@
 
   <% include include/footer.ejs %>
   <% include include/scripts.ejs %>
+  <% include include/google_analytics.ejs %>
 
   </body>
 </html>
