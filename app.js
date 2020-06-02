@@ -12,7 +12,8 @@ require('dotenv').config();
 
 // Routes
 var indexRouter = require('./routes/index');
-var cvRouter = require('./routes/coronavirus');
+var cvBlock = require('./routes/blockchain');
+var cvAPI = require('./routes/blockchain');
 
 // Controllers
 var eosController = require('./controllers/eos');
@@ -69,7 +70,8 @@ app.use(cors());
 // --------------------------------------------
 // API Endpoints
 app.use('/', indexRouter);
-app.use('/block/coronavirus', cvRouter);
+app.use('/blockchain', cvBlock);
+app.use('/api/v1', cvAPI);
 
 // --------------------------------------------
 // catch 404 and forward to error handler

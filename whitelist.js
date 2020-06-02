@@ -1,10 +1,7 @@
 var _ = require('lodash');
 
-var origins = ['http://api.clementineos.it/',
-               'http://block.clementineos.it/',
-               'http://localhost:3001/', 
-               'http://localhost:3002/',
-               'https://clementineos-block.herokuapp.com/'];
+var origins = ['http://coronavirus.clementineos.it/',
+               'http://localhost:3001/'];
 
 var cors = {
   origin: function (origin, callback) {

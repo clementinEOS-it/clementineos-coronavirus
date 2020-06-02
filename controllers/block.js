@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const moment = require('moment');
-var eosController = require('../controllers/eos');
+var eosController = require('./eos');
 const axios = require('axios');
 const async = require('async');
 const crypto = require('crypto');

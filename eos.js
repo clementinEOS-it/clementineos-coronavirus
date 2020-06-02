@@ -11,7 +11,8 @@ var networks = [
                 scope: 'gqeaceafdbkq'
             }
         }
-    },{
+    },
+    {
         account: 'iaqvrxpyvqgw',
         url: 'https://api.testnet.eos.io',
         smartContracts: {

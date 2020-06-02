@@ -12,8 +12,14 @@ const whitelist = require('../whitelist');
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
-  res.render('index', { title: 
-    process.env.TITLE 
+  res.render('index', { 
+    title: process.env.TITLE 
+  });
+});
+
+router.get('/coronavirus', function(req, res, next) {
+  res.render('api', { 
+    title: process.env.TITLE 
   });
 });
 

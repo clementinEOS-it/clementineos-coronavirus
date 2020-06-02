@@ -1,5 +1,5 @@
 var express = require('express');
-var cvController = require('../controllers/coronavirus');
+var cvBlock = require('../controllers/block');
 var cors = require('cors');
 
 require('dotenv').config();
@@ -24,7 +24,7 @@ router.post('/', cors(whitelist.cors), function(req, res, next) {
         data: req.body
     }];
 
-    cvController.run(actions, (err, response) => {
+    cvBlock.run(actions, (err, response) => {
         if (err) {
             console.error(response);
             res.status(500).json(response);
@@ -34,6 +34,35 @@ router.post('/', cors(whitelist.cors), function(req, res, next) {
         }
     });
     
+});
+
+router.param('key', (req, res, next, key) => {
+  
+    console.log('Param: ' + key);
+  
+    pk = process.env.PRIVATEKEY
+    
+    if (key == 'status') {
+      eos = req.app.locals.eos;
+    } else {
+      eos = require('../eos')(key);
+    };
+  
+    next();
+});
+  
+router.get('/info/:key', cors(whitelist.cors), (req, res, next) => {
+
+    var r = {
+        eos: eos,
+        privateKey: pk
+    };
+
+    console.table(JSON.stringify(r));
+
+    res.setHeader('Content-Type', 'application/json');
+    res.jsonp(r);
+
 });
 
 module.exports = router;
