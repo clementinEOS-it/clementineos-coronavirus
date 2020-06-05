@@ -1,11 +1,6 @@
 var express = require('express');
-<<<<<<< HEAD
 var api = require('../controllers/api');
 var geojson = require('../controllers/geojson');
-=======
-var coronavirusController = require('../controllers/block');
-var geoJSONController = require('../controllers/geojson');
->>>>>>> e6d7d7093898ead07ae9c280056ff8d357beadf6
 const _ = require('lodash');
 const { Parser } = require('json2csv');
 var eos = require('eosblockchain');

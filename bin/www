@@ -25,11 +25,12 @@ app.set('port', port);
 // Check if blockchain data is updated ...
 let isTimetoUpdate = () => {  
   var format = 'hh:mm:ss'
-  var time = moment('18:00:00',format)
+  var time = moment(process.env.START_TIME,format)
   var now = moment();
 
   return now.isAfter(time);  
 };
+
 /**
  * Create HTTP server.
  */

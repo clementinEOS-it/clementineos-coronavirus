@@ -5,9 +5,9 @@ const axios = require('axios');
 const async = require('async');
 const crypto = require('crypto');
 const opendata = require('../opendata/coronavirus');
-const eosNet = require('../eos')(process.env.ACCOUNT)
 
 require('dotenv').config();
+const eosNet = require('../eos')(process.env.ACCOUNT)
 
 var api_url;
 
@@ -112,33 +112,7 @@ let isNew = (api_data, item) => {
 
     var element = _.find(api_data, { 
         'id_hash': item.key
-        // , 'source_hash': item.source_hash
-        // ,'date_at': item.dateISO
     });
-
-    /*
-    var element = _.find(api_data, o => {
-
-        // console.log('Element find :' + JSON.stringify(o));
-
-
-        return (item.key == o.id_hash) &&
-               (item.source_hash == o.source_hash) &&
-               (moment(item.dateISO).isSame(o.date_at)) &&
-               item.lng == o.lng &&
-               item.hws == o.hws &&
-               item.ic == o.ic &&
-               item.to == o.to &&
-               item.hi == o.hi &&
-               item.tot_cp == o.tot_cp && 
-               item.tot_new_cp == o.tot_new_cp &&
-               item.dh == o.dh &&
-               item.dead == o.dead &&
-               item.tot_c == o.tot_c &&
-               item.sw == o.sw &&
-               item.tc == o.tc
-    });
-    */
 
     if (typeof element == 'undefined') {
         console.log('***** New opendata element funded *****');
@@ -163,7 +137,7 @@ let send = (socket, data, api_data, cb) => {
     async.eachSeries(data, (d, callback) => {
 
         // controllo se esiste già
-        if (isNew(api_data, d)) {
+        if (isNew(api_data, d) || _.size(data) == 0) {
 
             var contract = eosNet.smartContracts.coronavirus;
     
