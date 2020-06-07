@@ -14,7 +14,7 @@ require('dotenv').config();
 // Routes
 var indexRouter = require('./routes/index');
 var cvBlock = require('./routes/blockchain');
-var cvAPI = require('./routes/blockchain');
+var cvAPI = require('./routes/api');
 
 // --------------------------------------------
 var app = express();

@@ -7,17 +7,18 @@ const crypto = require('crypto');
 const opendata = require('../opendata/coronavirus');
 
 require('dotenv').config();
-const eosNet = require('../eos')(process.env.ACCOUNT)
+const eosNet = require('../eos')(process.env.ACCOUNT);
 
 var api_url;
 
-if (process.env.TEST == 1) {
-    api_url = 'http://localhost:3001/covid19/v1/';
+if (process.env.ENV == 1) {
+    api_url = 'http://localhost:3001/api/v1/';
 } else {
-    api_url = 'http://api.clementineos.it/covid19/v1/';
+    api_url = 'http://api.clementineos.it/api/v1/';
 };
 
 let getAPI = (cb) => {
+
     axios.get(api_url).then(data => {
         cb(false, data);
     }).catch(error => {
@@ -25,6 +26,7 @@ let getAPI = (cb) => {
         console.error(error);
         cb(true, error);
     });
+
 };
 
 let getData = (source, cb) => {
@@ -140,6 +142,7 @@ let send = (socket, data, api_data, cb) => {
         if (isNew(api_data, d) || _.size(data) == 0) {
 
             var contract = eosNet.smartContracts.coronavirus;
+            console.table(contract);
     
             run(contract, 'send', d, (err, response) => {
 
@@ -188,6 +191,7 @@ let update = (socket, cb) => {
     async.series({
         one: function(callback) {
 
+            console.log('get API data ...');
             getAPI((err, data) => {
                 if (err) {
                     callback(err, 'Error to get Data Table from Blockchain');
@@ -200,6 +204,7 @@ let update = (socket, cb) => {
         },
         two: function(callback){
 
+            console.log('get opendata source ...');
             getData(opendata, (err, data) => {
 
                 var msg = 'sending n.' + _.size(data) + ' data to Blockchain network ... ';

@@ -12,9 +12,6 @@ var router = express.Router();
 router.get('/', (req, res, next) => {
 
     var contract = req.app.locals.eos.smartContracts.coronavirus;
-    // console.table(contract);
-
-    // var _limit = getLimit(req);
     var _limit = (req.query.limit || -1);
 
     getBlockchainTable(contract, _limit, (err, response) => {
@@ -218,7 +215,7 @@ let getBlockchainTable = (contract, limit, cb) => {
             return item.dateISO
         });
 
-        cb(err, r);
+        cb(error, r);
 
     });
 

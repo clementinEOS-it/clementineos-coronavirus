@@ -40,11 +40,7 @@ var server = http.createServer(app);
 const io = require("socket.io")(server);
 
 io.origins((origin, callback) => {
-  console.log('Origin for Socket: ' + origin);
-  if (_.indexOf(whitelist.origins, origin) == -1) {
-    return callback('origin not allowed', false);
-  };
-  callback(null, true);
+  whitelist.socket(origin, callback);
 });
 
 io.on('connection', socket => {
