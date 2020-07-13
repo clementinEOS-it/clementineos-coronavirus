@@ -95,7 +95,7 @@ let byGraphListOne = (data, select, cb) => {
         }
 
         var _d = {
-            'date': _item._ds,
+            'date': moment(_item._ds).format('DD/MM/YYYY'),
             'value': v
         };
             
@@ -259,11 +259,11 @@ let _runData = (_prev, _last, byLatLng, cb) => {
     var _item_last = get_data(_last, byLatLng);
     var _item_prev = get_data(_prev, byLatLng);
 
-    console.log('----- LAST -----');
-    console.table(_item_last);
+    // console.log('----- LAST -----');
+    // console.table(_item_last);
 
-    console.log('----- PREV -----');
-    console.table(_item_prev);
+    // console.log('----- PREV -----');
+    // console.table(_item_prev);
 
     var keys = Object.keys(_last);
 
@@ -275,6 +275,7 @@ let _runData = (_prev, _last, byLatLng, cb) => {
             id_hash: _item_last._id_hash,
             lat: _item_last._lat,
             lng: _item_last._lng,
+            item: k,
             title: '',
             subtitle: '',
             value: _item_last['_' + k],

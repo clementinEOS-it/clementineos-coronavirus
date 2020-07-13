@@ -89,8 +89,8 @@ router.get('/diff', (req, res, next) => {
 
     var contract = req.app.locals.eos.smartContracts.coronavirus;
     
-    //var _limit = getLimit(req);
     var _limit = (req.query.limit || -1);
+    var _select = (req.query.select || -1);
 
     getBlockchainTable(contract, _limit, (err, response) => {
 
@@ -99,61 +99,79 @@ router.get('/diff', (req, res, next) => {
         } else {
             console.log('by diff ...');
             var r = api.byTime(response);
-            var r = api.byDiff(r);
+            r = api.byDiff(r);
+
+            var maxD = _.maxBy(r, item => {
+                return item.data;
+            });
+
+            // console.log(JSON.stringify(maxD));
+  
+            r = _.filter(r, item => {
+                return item.data == maxD.data
+            });
+            
+            console.table(JSON.stringify(r));
+
+            if (typeof _select != 'undefined') {
+                r = _.filter(r, o => {
+                    return o.item == _select
+                });
+            };
+
             res.status(200).json(r);
+
         };
 
     });
     
 });
 
+router.get('/group', (req, res, next) => {
+
+    var contract = req.app.locals.eos.smartContracts.coronavirus;
+    var _limit = (req.query.limit || -1);
+    var _select = req.query.select;
+
+    getGroupData(contract, _limit, _select, (err, response) => {
+        if (err) {
+            res.status(500).send(response);
+        } else {
+            res.status(200).send(response);
+        }
+    })
+
+});
+
 router.get('/csv/group', (req, res, next) => {
 
     var contract = req.app.locals.eos.smartContracts.coronavirus;
-    
     var _limit = (req.query.limit || -1);
+    var _select = req.query.select;
 
-    getBlockchainTable(contract, _limit, (err, response) => {
+    getGroupData(contract, _limit, _select, (err, response) => {
 
         if (err) {
-            res.status(500).send('');
+            res.status(500).send(response);
         } else {
 
-            var r = api.byTime(response);
+            let fields;
 
-            console.log('data by group ... select ' + req.query.select);
-
-            if (typeof req.query.select != "undefined") {
-
-                const fields = ['date', 'value'];
-            
-                const opts = { 
-                    fields 
-                };
-
-                api.yGraphListOne(r, req.query.select, _response => {
-                    const parser = new Parser(opts);
-                    const csv = parser.parse(_response);
-                    res.setHeader('Content-Type', 'text/csv');
-                    res.status(200).send(csv);
-                });
-
+            if (typeof _select != "undefined") {
+                fields = ['date', 'value'];
             } else {
+                fields = ['group', 'date', 'value'];
+            };
 
-                const fields = ['group', 'date', 'value'];
-            
-                const opts = { 
-                    fields 
-                };
+            const opts = { 
+                fields 
+            };
 
-                api.byGraph(r, _response => {
-                    const parser = new Parser(opts);
-                    const csv = parser.parse(_response);
-                    res.setHeader('Content-Type', 'text/csv');
-                    res.status(200).send(csv);
-                });
+            const parser = new Parser(opts);
+            const csv = parser.parse(response);
+            res.setHeader('Content-Type', 'text/csv');
+            res.status(200).send(csv);
 
-            }
         }
     })
 });
@@ -220,5 +238,33 @@ let getBlockchainTable = (contract, limit, cb) => {
     });
 
 };
+
+let getGroupData = (contract, _limit, _select, callback) => {
+
+    getBlockchainTable(contract, _limit, (err, response) => {
+
+        if (err) {
+            callback(err, {});
+        } else {
+
+            var r = api.byTime(response);
+
+            if (typeof _select != "undefined") {
+
+                console.log('data by group ... select ' + _select);
+
+                api.byGraphListOne(r, _select, _response => {
+                    callback(false, _response);
+                });
+
+            } else {
+                api.byGraph(r, _response => {
+                    callback(false, _response);
+                });
+            }
+        }
+    });
+
+}
 
 module.exports = router;
