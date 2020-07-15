@@ -371,6 +371,7 @@ let _runData = (_prev, _last, byLatLng, cb) => {
         id_hash: _item_last._id_hash,
         lat: _item_last._lat,
         lng: _item_last._lng,
+        item: 'perc_dead',
         title: 'Letalità',
         subtitle: 'Lethality 殺傷力',
         value: _perc_dead,
@@ -390,6 +391,7 @@ let _runData = (_prev, _last, byLatLng, cb) => {
         id_hash: _item_last._id_hash,
         lat: _item_last._lat,
         lng: _item_last._lng,
+        item: 'perc_head',
         title: 'Guarigione',
         subtitle: 'healing 复原',
         value: _perc_head,
@@ -428,7 +430,7 @@ let getPercentageChange = (oldNumber, newNumber) => {
 
 };
 
-let byLatLng = data => {
+let byLatLng = (data, select) => {
 
     var _data = [];
 
@@ -447,24 +449,55 @@ let byLatLng = data => {
             var _last = _.last(item);
             var _prev = item[_.size(item)-2];
 
-            console.log('Funded n. ' + _.size(item));
-            console.log('LatLng Prev -> ' + getString_LatLng(_prev));
-            console.log('LatLng Last -> ' + getString_LatLng(_last));
+            // console.log('Funded n. ' + _.size(item));
+            // console.log('LatLng Prev -> ' + getString_LatLng(_prev));
+            // console.log('LatLng Last -> ' + getString_LatLng(_last));
 
             _runData(_prev, _last, true, result => {
                 _data = _.union(_data, result);
             });
         }
-
     });
+
+    if (typeof select != 'undefined') {
+        _data = _.filter(_data, o => {
+            return o.item == select
+        });
+    };
 
     return _data;
 
 };
 
+/*
+
+{
+    "from": "gqeaceafdbkq",
+    "id": 2,
+    "date_at": "2020-02-24",
+    "id_hash": "4a319383e66a4335a8bfa34f98532162febf587a38da949baada4142a79f8b6a",
+    "source_hash": "d15751d2627b50c696b4f1ae4ede7127780e1c57ef8d4ef15a531067e5eae9b0",
+    "lat": "46.49933452999999872",
+    "lng": "11.35662422000000049",
+    "hws": 0,
+    "ic": 0,
+    "to": 0,
+    "hi": 0,
+    "tot_cp": 0,
+    "tot_new_cp": 0,
+    "dh": 0,
+    "dead": 0,
+    "tot_c": 0,
+    "sw": 1,
+    "tc": 0
+  }
+
+
+*/
+
 let getString_LatLng = (item) => {
     return [item.lat,item.lng]
-}
+};
 
 let byTime = (data) => {
 

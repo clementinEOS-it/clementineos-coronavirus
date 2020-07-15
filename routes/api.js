@@ -30,13 +30,15 @@ router.get('/latlng', (req, res, next) => {
     // console.table(contract);
 
     var _limit = (req.query.limit || -1);
+    var _select = req.query.select;
 
     getBlockchainTable(contract, _limit, (err, response) => {
 
         if (err) {
             res.status(500).send('');
         } else {
-            var r = api.byLatLng(response);
+            var r = api.byLatLng(response, _select);
+
             res.status(200).json(r);
         };
     });
