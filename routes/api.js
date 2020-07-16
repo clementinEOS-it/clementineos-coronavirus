@@ -45,7 +45,7 @@ router.get('/latlng', (req, res, next) => {
                 console.log('get GEOJSON ...');
                 api.getGeoJSON(r, _map, (err, response) => {
                     if (!err) {
-                        res.status(200).json(response);  
+                        res.status(200).jsonp(response);  
                     } else {
                         res.status(500).send('Error to GET GEOJSON Data');
                     }

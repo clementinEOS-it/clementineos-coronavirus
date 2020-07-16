@@ -560,17 +560,18 @@ let getGeoJSON = (data, state, callback) => {
 
         var geojson = response.data;
         console.log('Features: ' + _.size(geojson.features));
-
+        var i=1;
         _.forEach(geojson.features, feature => {
+
             var index = _.findIndex(data, item => {
                 var pt = turf.point([item.lng, item.lat]);
                 return (turf.booleanPointInPolygon(pt, feature.geometry.coordinates)) 
             });
 
-            console.log('Index: ' + index);
             feature.properties.api = data[index];
         });
 
+        console.log('Features: ' + _.size(geojson.features));
         callback(false, geojson);
 
     }).catch(error => {
