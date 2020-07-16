@@ -9,13 +9,7 @@ const opendata = require('../opendata/coronavirus');
 require('dotenv').config();
 const eosNet = require('../eos')(process.env.ACCOUNT);
 
-var api_url;
-
-if (process.env.ENV == 1) {
-    api_url = 'http://localhost:3001/api/v1/';
-} else {
-    api_url = 'http://api.clementineos.it/api/v1/';
-};
+var api_url = (process.env.ENV == 1 ? 'http://localhost:3001/api/v1/' : 'http://api.clementineos.it/api/v1/');
 
 let getAPI = (cb) => {
 

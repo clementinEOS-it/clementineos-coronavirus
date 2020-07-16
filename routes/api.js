@@ -31,15 +31,29 @@ router.get('/latlng', (req, res, next) => {
 
     var _limit = (req.query.limit || -1);
     var _select = req.query.select;
+    var _map = req.query.map;
 
     getBlockchainTable(contract, _limit, (err, response) => {
 
         if (err) {
-            res.status(500).send('');
+            res.status(500).send('Error to GET Blockchain Data');
         } else {
+
             var r = api.byLatLng(response, _select);
 
-            res.status(200).json(r);
+            if (typeof _map != 'undefined') {
+                console.log('get GEOJSON ...');
+                api.getGeoJSON(r, _map, (err, response) => {
+                    if (!err) {
+                        res.status(200).json(response);  
+                    } else {
+                        res.status(500).send('Error to GET GEOJSON Data');
+                    }
+                })
+            } else {
+                res.status(200).json(r);
+            }
+
         };
     });
     

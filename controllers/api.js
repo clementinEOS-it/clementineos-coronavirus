@@ -1,5 +1,7 @@
 const _ = require('lodash');
 const moment = require('moment');
+const axios = require('axios');
+var turf = require('@turf/turf');
 
 require('dotenv').config();
 
@@ -492,7 +494,6 @@ let byLatLng = (data, select) => {
     "tc": 0
   }
 
-
 */
 
 let getString_LatLng = (item) => {
@@ -550,6 +551,36 @@ let checkDataFloat = d => {
     }
 };
 
+let getGeoJSON = (data, state, callback) => {
+
+    var url = (process.env.ENV == 1 ? 'http://localhost:3002/map/' : 'http://map.clementineos.it/map/') + state;
+    console.log(url);
+
+    axios.get(url).then(response => {
+
+        var geojson = response.data;
+        console.log('Features: ' + _.size(geojson.features));
+
+        _.forEach(geojson.features, feature => {
+            var index = _.findIndex(data, item => {
+                var pt = turf.point([item.lng, item.lat]);
+                return (turf.booleanPointInPolygon(pt, feature.geometry.coordinates)) 
+            });
+
+            console.log('Index: ' + index);
+            feature.properties.api = data[index];
+        });
+
+        callback(false, geojson);
+
+    }).catch(error => {
+        // handle error
+        console.error(error);
+        callback(true, error);
+    });
+
+}
+
 module.exports = {
     byTime,
     byDiff,
@@ -557,5 +588,6 @@ module.exports = {
     csvJSON,
     byGraph,
     byGraphList,
-    byGraphListOne
+    byGraphListOne,
+    getGeoJSON
 };

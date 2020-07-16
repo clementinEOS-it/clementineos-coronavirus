@@ -19,6 +19,7 @@
     "@babel/core": "^7.10.2",
     "@babel/preset-env": "^7.10.2",
     "@fidm/x509": "^1.2.1",
+    "@turf/turf": "^5.1.6",
     "async": "^3.2.0",
     "axios": "^0.19.2",
     "babel-core": "^6.26.3",
